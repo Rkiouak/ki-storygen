@@ -1,17 +1,18 @@
 // src/components/Header.jsx
 import React, {useState} from 'react';
-import {AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem} from '@mui/material'; // Added Menu, MenuItem
+import {AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, useTheme} from '@mui/material'; // Added Menu, MenuItem and useTheme
 import NextLink from 'next/link';
 import {useRouter} from 'next/router'; // Added useRouter
 import {useAuth} from '@/context/AuthContext';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import LaunchIcon from '@mui/icons-material/Launch'; // Import LaunchIcon
 
 function Header() {
     const {user, isAuthenticated, logout} = useAuth();
     const router = useRouter(); // Hook to get current route
 
-    // State for User Menu
+    const theme = useTheme(); // Access theme for styling
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
 
@@ -60,6 +61,24 @@ function Header() {
 
                 {/* Right-hand side controls */}
                 <Box sx={{display: 'flex', alignItems: 'center'}}>
+                    <Button
+                        color="inherit"
+                        component={NextLink}
+                        href="https://musings-mr.net"
+                        target="_blank"
+                        rel="noopener noreferrer" // Security for opening in new tab
+                        endIcon={<LaunchIcon sx={{ fontSize: '1rem' }} />}
+                        sx={{
+                            whiteSpace: 'nowrap',
+                            ml: 1,
+                            '&:hover': {
+                                 backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)',
+                            },
+                            color: theme.palette.text.secondary,
+                        }}
+                    >
+                        Matt's Blog
+                    </Button>
                     {isAuthenticated ? (
                         <>
                             <Button
