@@ -14,8 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 import StoryPreview from '@/components/StoryPreview'; // For public stories
 import CookieConsent from 'react-cookie-consent';
 
-// getStaticProps to fetch public stories (similar to your old pages/index.jsx)
-export async function getStaticProps() {
+export async function getServerSideProps() {
     let publicStories = [];
     let storiesError = null;
     const storiesApiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/experiments/campfire/public/list`;
@@ -31,7 +30,6 @@ export async function getStaticProps() {
     } catch (e) {
         storiesError = 'Failed to load public stories due to a network or fetch error.';
     }
-    // Removed blog post fetching
     return { props: { publicStories, storiesError } };
 }
 

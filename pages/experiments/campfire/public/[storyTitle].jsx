@@ -25,16 +25,7 @@ async function fetchPublicStoryTitles() {
     }
 }
 
-export async function getStaticPaths() {
-    const publicStories = await fetchPublicStoryTitles();
-    const paths = publicStories.map((story) => ({
-        params: { storyTitle: String(story.storyTitle) }, // Ensure storyTitle is a string
-    }));
-
-    return { paths, fallback: false };
-}
-
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
     const { storyTitle } = context.params;
 
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/experiments/campfire/public?title=${encodeURIComponent(storyTitle)}`;
@@ -45,28 +36,22 @@ export async function getStaticProps(context) {
             if (res.status === 404) {
                 return { notFound: true };
             }
-            console.error(`Failed to fetch story ${storyTitle}: ${res.status}`);
-            // throw new Error(`Failed to fetch story. Status: ${res.status}`);
             return { props: { error: `Failed to load story. Status: ${res.status}`, story: null } };
         }
         const storyData = await res.json();
 
-        if (!storyData || !storyData.storyId) { // Basic validation
+        if (!storyData || !storyData.storyId) {
             return { notFound: true };
         }
 
-        // Process turns to ensure consistency if needed (e.g. for StoryImageDisplay)
+        // This processing logic can stay
         const processedTurns = processChatTurns(storyData.chatTurns);
-        const storytellerTurns = getStorytellerTurns(processedTurns);
-
 
         return {
             props: {
                 story: {
                     ...storyData,
-                    // Pass only storyteller turns if PublicStoryDisplayView expects that
-                    // Or pass all chatTurns and let PublicStoryDisplayView filter
-                    chatTurns: processedTurns, // Pass all processed turns
+                    chatTurns: processedTurns,
                 },
                 error: null,
             },
@@ -74,8 +59,6 @@ export async function getStaticProps(context) {
     } catch (error) {
         console.error(`Error fetching story ${storyTitle}:`, error);
         return { props: { error: `Failed to load story. Reason: ${error.message}`, story: null } };
-        // For "output: export", you might need to return { notFound: true } or handle error differently
-        // if revalidate is not allowed. Given previous error, removing revalidate if build fails.
     }
 }
 

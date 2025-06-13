@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export',  <-- REMOVE OR COMMENT OUT THIS LINE
   reactStrictMode: true,
   // Add the rewrites configuration here
   async rewrites() {
