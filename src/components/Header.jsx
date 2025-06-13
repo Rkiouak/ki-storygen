@@ -1,18 +1,17 @@
-// src/components/Header.jsx
 import React, {useState} from 'react';
-import {AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, useTheme} from '@mui/material'; // Added Menu, MenuItem and useTheme
+import {AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, useTheme} from '@mui/material';
 import NextLink from 'next/link';
-import {useRouter} from 'next/router'; // Added useRouter
+import {useRouter} from 'next/router';
 import {useAuth} from '@/context/AuthContext';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import LaunchIcon from '@mui/icons-material/Launch'; // Import LaunchIcon
+import LaunchIcon from '@mui/icons-material/Launch';
 
 function Header() {
     const {user, isAuthenticated, logout} = useAuth();
-    const router = useRouter(); // Hook to get current route
+    const router = useRouter();
 
-    const theme = useTheme(); // Access theme for styling
+    const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
 
@@ -27,15 +26,14 @@ function Header() {
     const handleLogout = () => {
         logout();
         handleMenuClose();
-        router.push('/'); // Redirect to home after logout
+        router.push('/');
     };
 
-    const isCurrentPage = (path) => router.pathname === path;
+    const isCurrentPage = (path) => router.pathname.startsWith(path);
 
     return (
         <AppBar position="static">
             <Toolbar sx={{minHeight: '48px', '@media (min-width:600px)': {minHeight: '56px'}, py: 0.5}}>
-                {/* Main Site Logo */}
                 <Box
                     component="img"
                     sx={{
@@ -47,32 +45,41 @@ function Header() {
                         objectFit: 'cover',
                     }}
                     alt="Musings logo"
-                    src={"/newfy.jpeg"} // Main site logo
+                    src={"/newfy.jpeg"}
                 />
 
-                {/* Site Title */}
                 <Typography variant="h6" component="div" sx={{mr: 2}}>
                     <NextLink href="/" style={{textDecoration: 'none', color: 'inherit'}}>
                         Ki Storygen
                     </NextLink>
                 </Typography>
-                {/* Spacer */}
+
+                <Button
+                    color="inherit"
+                    component={NextLink}
+                    href="/characters"
+                    sx={{
+                        backgroundColor: isCurrentPage('/characters') ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                    }}
+                >
+                    Characters
+                </Button>
+
                 <Box sx={{flexGrow: 1}}/>
 
-                {/* Right-hand side controls */}
                 <Box sx={{display: 'flex', alignItems: 'center'}}>
                     <Button
                         color="inherit"
                         component={NextLink}
                         href="https://musings-mr.net"
                         target="_blank"
-                        rel="noopener noreferrer" // Security for opening in new tab
+                        rel="noopener noreferrer"
                         endIcon={<LaunchIcon sx={{ fontSize: '1rem' }} />}
                         sx={{
                             whiteSpace: 'nowrap',
                             ml: 1,
                             '&:hover': {
-                                 backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)',
+                                backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)',
                             },
                             color: theme.palette.text.secondary,
                         }}
@@ -90,27 +97,27 @@ function Header() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     whiteSpace: 'nowrap',
-                                    padding: '6px 12px', // Adjust padding for better spacing with larger logo
+                                    padding: '6px 12px',
                                     '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.15)', // Subtle hover background
-                                        '& .ki-logo, & .ki-text': { // Target children by class
-                                            opacity: 0.85, // Slightly dim on hover for effect
+                                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                                        '& .ki-logo, & .ki-text': {
+                                            opacity: 0.85,
                                         }
                                     },
-                                                                        backgroundColor: isCurrentPage('/') || router.pathname.startsWith('/experiments/campfire') ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                                    backgroundColor: isCurrentPage('/experiments/campfire') ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                                 }}
                             >
                                 <Box
-                                    className="ki-logo" // Added class for targeting
+                                    className="ki-logo"
                                     component="img"
-                                    src="/ki-storygen-logo.png" // <<<<---- ENSURE THIS LOGO PATH IS CORRECT
+                                    src="/ki-storygen-logo.png"
                                     alt="Ki Storygen Logo"
                                     sx={{
-                                        height: 38, // Updated size
-                                        width: 38,  // Updated size
+                                        height: 38,
+                                        width: 38,
                                         mr: 0.75,
                                         objectFit: 'contain',
-                                        borderRadius: '50%', // Making Ki Storygen logo circular
+                                        borderRadius: '50%',
                                         transition: 'opacity 0.2s ease-in-out',
                                     }}
                                 />
@@ -120,7 +127,6 @@ function Header() {
                                 </Typography>
                             </Button>
 
-                            {/* User Menu */}
                             <IconButton
                                 size="large"
                                 edge="end"
@@ -148,7 +154,7 @@ function Header() {
                                 onClose={handleMenuClose}
                                 PaperProps={{
                                     sx: {
-                                        mt: 1, // Add some margin-top to the menu
+                                        mt: 1,
                                     }
                                 }}
                             >
