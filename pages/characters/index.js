@@ -94,9 +94,11 @@ export default function CharactersPage() {
                                     <ListItem
                                         secondaryAction={
                                             <NextLink href={`/characters/edit/${char.character_id}`} passHref legacyBehavior>
-                                                <IconButton edge="end" aria-label="edit">
-                                                    <EditIcon />
-                                                </IconButton>
+                                                <a>  {/* This is the new anchor tag */}
+                                                    <IconButton edge="end" aria-label="edit">
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </a>
                                             </NextLink>
                                         }
                                     >
