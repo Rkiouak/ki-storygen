@@ -81,7 +81,6 @@ function Header() {
                             '&:hover': {
                                 backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)',
                             },
-                            color: theme.palette.text.secondary,
                         }}
                     >
                         Matt's Blog
