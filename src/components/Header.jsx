@@ -1,26 +1,39 @@
-import React, {useState} from 'react';
-import {AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, useTheme} from '@mui/material';
+import React, { useState } from 'react';
+import {
+    AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, useTheme, useMediaQuery
+} from '@mui/material';
 import NextLink from 'next/link';
-import {useRouter} from 'next/router';
-import {useAuth} from '@/context/AuthContext';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/context/AuthContext';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import LaunchIcon from '@mui/icons-material/Launch';
+import MenuIcon from '@mui/icons-material/Menu'; // Hamburger Icon
 
 function Header() {
-    const {user, isAuthenticated, logout} = useAuth();
+    const { user, isAuthenticated, logout } = useAuth();
     const router = useRouter();
-
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Use a breakpoint that suits your design, 'md' is a common choice
+
     const [anchorEl, setAnchorEl] = useState(null);
+    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+
     const isMenuOpen = Boolean(anchorEl);
+    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
-
     const handleMenuClose = () => {
         setAnchorEl(null);
+        handleMobileMenuClose();
+    };
+
+    const handleMobileMenuOpen = (event) => {
+        setMobileMoreAnchorEl(event.currentTarget);
+    };
+    const handleMobileMenuClose = () => {
+        setMobileMoreAnchorEl(null);
     };
 
     const handleLogout = () => {
@@ -29,15 +42,60 @@ function Header() {
         router.push('/');
     };
 
-    const isCurrentPage = (path) => router.pathname.startsWith(path);
+    const menuId = 'primary-search-account-menu';
+    const renderMenu = (
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            id={menuId}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+        >
+            <MenuItem onClick={handleMenuClose} component={NextLink} href="/profile">Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
+    );
+
+    const mobileMenuId = 'primary-search-account-menu-mobile';
+    const renderMobileMenu = (
+        <Menu
+            anchorEl={mobileMoreAnchorEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            id={mobileMenuId}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isMobileMenuOpen}
+            onClose={handleMobileMenuClose}
+        >
+            <MenuItem component={NextLink} href="/characters" onClick={handleMenuClose}>
+                <p>Characters</p>
+            </MenuItem>
+            <MenuItem component="a" href="https://musings-mr.net" target="_blank" rel="noopener noreferrer" onClick={handleMenuClose}>
+                <p>Matt's Blog</p>
+            </MenuItem>
+            {!isAuthenticated && (
+                [
+                    <MenuItem key="login" component={NextLink} href="/login" onClick={handleMenuClose}>
+                        <p>Login</p>
+                    </MenuItem>,
+                    <MenuItem key="signup" component={NextLink} href="/signup" onClick={handleMenuClose}>
+                        <p>Sign Up</p>
+                    </MenuItem>
+                ]
+            )}
+        </Menu>
+    );
 
     return (
         <AppBar position="static">
-            <Toolbar sx={{minHeight: '48px', '@media (min-width:600px)': {minHeight: '56px'}, py: 0.5}}>
+            <Toolbar>
+                {/* Logo */}
                 <Box
                     component="img"
                     sx={{
-                        display: {xs: 'none', md: 'flex'},
+                        display: { xs: 'none', md: 'flex' },
                         mr: 1,
                         height: 52,
                         width: 52,
@@ -48,139 +106,82 @@ function Header() {
                     src={"/newfy.jpeg"}
                 />
 
-                <Typography variant="h6" component="div" sx={{mr: 2}}>
-                    <NextLink href="/" style={{textDecoration: 'none', color: 'inherit'}}>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    <NextLink href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
                         Ki Storygen
                     </NextLink>
                 </Typography>
 
-                <Button
-                    color="inherit"
-                    component={NextLink}
-                    href="/characters"
-                    sx={{
-                        backgroundColor: isCurrentPage('/characters') ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                    }}
-                >
-                    Characters
-                </Button>
-
-                <Box sx={{flexGrow: 1}}/>
-
-                <Box sx={{display: 'flex', alignItems: 'center'}}>
+                {/* Desktop Menu Items */}
+                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    <Button color="inherit" component={NextLink} href="/characters">
+                        Characters
+                    </Button>
                     <Button
                         color="inherit"
-                        component={NextLink}
                         href="https://musings-mr.net"
                         target="_blank"
                         rel="noopener noreferrer"
-                        endIcon={<LaunchIcon sx={{ fontSize: '1rem' }} />}
-                        sx={{
-                            whiteSpace: 'nowrap',
-                            ml: 1,
-                            '&:hover': {
-                                backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)',
-                            },
-                        }}
+                        endIcon={<LaunchIcon />}
                     >
                         Matt's Blog
                     </Button>
                     {isAuthenticated ? (
-                        <>
-                            <Button
-                                color="inherit"
-                                component={NextLink}
-                                href="/"
-                                sx={{
-                                    mr: {xs: 0.5, sm: 1.5},
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    whiteSpace: 'nowrap',
-                                    padding: '6px 12px',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                                        '& .ki-logo, & .ki-text': {
-                                            opacity: 0.85,
-                                        }
-                                    },
-                                    backgroundColor: isCurrentPage('/experiments/campfire') ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                                }}
-                            >
-                                <Box
-                                    className="ki-logo"
-                                    component="img"
-                                    src="/ki-storygen-logo.png"
-                                    alt="Ki Storygen Logo"
-                                    sx={{
-                                        height: 38,
-                                        width: 38,
-                                        mr: 0.75,
-                                        objectFit: 'contain',
-                                        borderRadius: '50%',
-                                        transition: 'opacity 0.2s ease-in-out',
-                                    }}
-                                />
-                                <Typography component="span" className="ki-text"
-                                            sx={{transition: 'opacity 0.2s ease-in-out'}}>
-                                    Ki Storygen
-                                </Typography>
-                            </Button>
-
-                            <IconButton
-                                size="large"
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls="primary-search-account-menu"
-                                aria-haspopup="true"
-                                onClick={handleProfileMenuOpen}
-                                color="inherit"
-                            >
-                                <AccountCircleIcon/>
-                            </IconButton>
-                            <Menu
-                                id="primary-search-account-menu"
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={isMenuOpen}
-                                onClose={handleMenuClose}
-                                PaperProps={{
-                                    sx: {
-                                        mt: 1,
-                                    }
-                                }}
-                            >
-                                <MenuItem component={NextLink} href="/profile" onClick={handleMenuClose}>
-                                    Profile
-                                </MenuItem>
-                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                            </Menu>
-                        </>
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            aria-label="account of current user"
+                            aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={handleProfileMenuOpen}
+                            color="inherit"
+                        >
+                            <AccountCircleIcon />
+                        </IconButton>
                     ) : (
                         <>
-                            <Button color="inherit" component={NextLink} href="/login" sx={{whiteSpace: 'nowrap'}}>
-                                Login
-                            </Button>
+                            <Button color="inherit" component={NextLink} href="/login">Login</Button>
                             <Button
                                 variant="contained"
                                 color="secondary"
                                 component={NextLink}
                                 href="/signup"
-                                sx={{ml: 1.5, whiteSpace: 'nowrap'}}
+                                sx={{ ml: 1.5 }}
                             >
                                 Sign Up
                             </Button>
                         </>
                     )}
                 </Box>
+
+                {/* Mobile Menu Icon */}
+                <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                    {isAuthenticated && (
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls={menuId}
+                            aria-haspopup="true"
+                            onClick={handleProfileMenuOpen}
+                            color="inherit"
+                        >
+                            <AccountCircleIcon />
+                        </IconButton>
+                    )}
+                    <IconButton
+                        size="large"
+                        aria-label="show more"
+                        aria-controls={mobileMenuId}
+                        aria-haspopup="true"
+                        onClick={handleMobileMenuOpen}
+                        color="inherit"
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                </Box>
             </Toolbar>
+            {renderMobileMenu}
+            {renderMenu}
         </AppBar>
     );
 }

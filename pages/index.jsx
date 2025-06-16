@@ -191,10 +191,10 @@ export default function KiStorygenHomePage({ publicStories, storiesError }) {
                         {!storiesError && (
                             <Grid container spacing={3}>
                                 {publicStories.length > 0 ? publicStories.map((story) => (
-                                    <Grid item key={story.storyId} xs={12} sm={6} md={4}>
+                                    <Grid item key={story.storyId} size={{xs:12, sm:6}} md={4}>
                                         <StoryPreview story={story} />
                                     </Grid>
-                                )) : <Grid item xs={12}><Typography align="center" sx={{py: 2, color: 'text.secondary'}}>No public stories available yet.</Typography></Grid>}
+                                )) : <Grid item size={{xs:12}}><Typography align="center" sx={{py: 2, color: 'text.secondary'}}>No public stories available yet.</Typography></Grid>}
                             </Grid>
                         )}
                     </AccordionDetails>
